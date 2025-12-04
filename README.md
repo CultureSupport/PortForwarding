@@ -10,3 +10,7 @@ of protocol port ranges
 - usefull for locking portS
 - usefull for local host build
 - usefull for ping port
+- usefull for portforward
+  router
+  - usefull for open ports
+  - usefull for reverse routing
