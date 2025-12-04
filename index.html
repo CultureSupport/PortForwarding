@@ -1,1 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer & Security Port Reference (0-65535)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Custom styles for code blocks */
+        .code-block {
+            background-color: #1e293b; /* Slate-800 */
+            color: #e0f2f1; /* Teal-50 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1d4ed8', // Blue-700
+                        secondary: '#059669', // Emerald-600
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8 p-6 bg-white shadow-xl rounded-xl">
+            <h1 class="text-4xl font-extrabold text-primary mb-2">Network Port Cheat Sheet</h1>
+            <p class="text-lg text-gray-600">A security and developer reference for common ports (0-65535), protocols, and command-line instructions.</p>
+            <p class="text-sm text-gray-400 mt-2">Well-Known (0-1023) and critical Registered Ports (1024-49151) are listed. Dynamic Ports (49152-65535) are generally used for ephemeral client connections.</p>
+        </header>
+
+        <!-- Search and Filter Controls -->
+        <div class="mb-8 flex flex-col sm:flex-row gap-4">
+            <input type="text" id="search-input" onkeyup="filterPorts()" placeholder="Search by Port (80), Protocol (TCP), or Service (HTTP)..."
+                   class="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition duration-150">
+            
+            <select id="category-filter" onchange="filterPorts()" class="w-full sm:w-1/3 p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition duration-150 bg-white">
+                <option value="all">All Categories</option>
+                <!-- Options populated by JS -->
+            </select>
+        </div>
+
+        <div id="port-list" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <!-- Port Cards will be injected here -->
+        </div>
+
+        <p id="no-results" class="text-center text-xl text-gray-500 mt-10 hidden">No ports matched your search criteria.</p>
+
+        <!-- Command Line Section -->
+        <div class="mt-16 p-6 bg-white shadow-xl rounded-xl">
+            <h2 class="text-3xl font-bold text-secondary mb-4 border-b pb-2">Command-Line Port Instructions</h2>
+            <p class="mb-4 text-gray-600">Essential commands for checking port status and security on Linux/macOS and Windows.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Netstat/SS: Check Listening Ports -->
+                <div class="bg-indigo-50 p-4 rounded-lg shadow-md">
+                    <h3 class="font-semibold text-lg text-indigo-700 mb-2">Check Listening Ports</h3>
+                    <p class="text-sm mb-2 text-indigo-600">View what services are running and on which ports.</p>
+                    <div class="code-block">
+                        <span class="text-primary-400 font-bold"># Linux/macOS</span><br>
+                        ss -tuln<br>
+                        <span class="text-primary-400 font-bold"># Windows (find PID)</span><br>
+                        netstat -ano | findstr LISTENING
+                    </div>
+                </div>
+
+                <!-- Nmap: Port Scanning -->
+                <div class="bg-red-50 p-4 rounded-lg shadow-md">
+                    <h3 class="font-semibold text-lg text-red-700 mb-2">Security Scanning (Nmap)</h3>
+                    <p class="text-sm mb-2 text-red-600">Scan for open ports on a target system.</p>
+                    <div class="code-block">
+                        <span class="text-red-400 font-bold"># Scan common ports</span><br>
+                        nmap -F <span class="text-yellow-400">192.168.1.1</span><br>
+                        <span class="text-red-400 font-bold"># Scan a specific range</span><br>
+                        nmap -p 1-1024 <span class="text-yellow-400">target.com</span>
+                    </div>
+                </div>
+
+                <!-- UFW: Firewall Management (Linux) -->
+                <div class="bg-green-50 p-4 rounded-lg shadow-md">
+                    <h3 class="font-semibold text-lg text-green-700 mb-2">Firewall Rule (UFW)</h3>
+                    <p class="text-sm mb-2 text-green-600">Open or close ports using `ufw` on Ubuntu/Debian.</p>
+                    <div class="code-block">
+                        <span class="text-green-400 font-bold"># Open Port 80 for HTTP</span><br>
+                        sudo ufw allow 80/tcp<br>
+                        <span class="text-green-400 font-bold"># Deny Telnet</span><br>
+                        sudo ufw deny 23
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const portData = [
+            // --- CORE NETWORKING & SYSTEM ---
+            { port: 7, protocol: 'TCP/UDP', service: 'ECHO', category: 'Core Networking', notes: 'Tests network connectivity. Rarely used today.' },
+            { port: 20, protocol: 'TCP', service: 'FTP-Data', category: 'Core Networking', notes: 'Data transfer channel for FTP.' },
+            { port: 21, protocol: 'TCP', service: 'FTP', category: 'Core Networking', notes: 'Control (command) channel for File Transfer Protocol. **Insecure**.' },
+            { port: 22, protocol: 'TCP', service: 'SSH', category: 'Remote Access & Security', notes: 'Secure Shell, used for secure remote logins, command execution, and SFTP/SCP file transfer. **Essential for security**.' },
+            { port: 23, protocol: 'TCP', service: 'Telnet', category: 'Remote Access & Security', notes: 'Unencrypted remote command-line access. **Avoid** for sensitive operations.' },
+            { port: 25, protocol: 'TCP', service: 'SMTP', category: 'Mail & Communication', notes: 'Simple Mail Transfer Protocol, used for email routing between mail servers.' },
+            { port: 53, protocol: 'UDP/TCP', service: 'DNS', category: 'Core Networking', notes: 'Domain Name System. UDP for standard queries, TCP for zone transfers.' },
+            { port: 67, protocol: 'UDP', service: 'DHCP', category: 'Core Networking', notes: 'DHCP Server. Used to automatically assign IP addresses.' },
+            { port: 68, protocol: 'UDP', service: 'DHCP', category: 'Core Networking', notes: 'DHCP Client.' },
+            { port: 69, protocol: 'UDP', service: 'TFTP', category: 'Core Networking', notes: 'Trivial File Transfer Protocol. Simple, non-authenticated file transfer.' },
+            { port: 80, protocol: 'TCP', service: 'HTTP', category: 'Web & API', notes: 'Hypertext Transfer Protocol. **Unencrypted** web traffic. Used for redirection to HTTPS.' },
+            { port: 123, protocol: 'UDP', service: 'NTP', category: 'Core Networking', notes: 'Network Time Protocol. Used for time synchronization across networks.' },
+            { port: 137, protocol: 'UDP', service: 'NetBIOS', category: 'Core Networking', notes: 'NetBIOS Name Service. Legacy Windows/Samba networking.' },
+            { port: 139, protocol: 'TCP', service: 'NetBIOS', category: 'Core Networking', notes: 'NetBIOS Session Service (SMB over NetBIOS).' },
+            { port: 161, protocol: 'UDP', service: 'SNMP', category: 'Security & Management', notes: 'Simple Network Management Protocol. Used for collecting network device information.' },
+            { port: 389, protocol: 'TCP/UDP', service: 'LDAP', category: 'Security & Management', notes: 'Lightweight Directory Access Protocol. Used for accessing and maintaining distributed directory information services.' },
+            { port: 443, protocol: 'TCP', service: 'HTTPS', category: 'Web & API', notes: 'HTTP Secure. Encrypted web traffic using **TLS/SSL**. **Essential** for all web services.' },
+            { port: 445, protocol: 'TCP', service: 'SMB', category: 'Core Networking', notes: 'Server Message Block. File sharing and printer access over TCP/IP (replacing NetBIOS).' },
+            { port: 587, protocol: 'TCP', service: 'SMTP Submission', category: 'Mail & Communication', notes: 'Standard port for email clients to submit messages to a mail server (with TLS).' },
+            { port: 636, protocol: 'TCP', service: 'LDAPS', category: 'Security & Management', notes: 'LDAP over TLS/SSL. Secure directory access.' },
+            { port: 990, protocol: 'TCP', service: 'FTPS', category: 'Remote Access & Security', notes: 'FTP over implicit TLS/SSL. Secure file transfer.' },
+            { port: 993, protocol: 'TCP', service: 'IMAPS', category: 'Mail & Communication', notes: 'IMAP over implicit TLS/SSL. Secure email management.' },
+            { port: 995, protocol: 'TCP', service: 'POP3S', category: 'Mail & Communication', notes: 'POP3 over implicit TLS/SSL. Secure email retrieval.' },
+            
+            // --- REGISTERED PORTS (Developer Focused) ---
+            { port: 1433, protocol: 'TCP', service: 'MSSQL', category: 'Databases', notes: 'Microsoft SQL Server database connection.' },
+            { port: 1521, protocol: 'TCP', service: 'Oracle', category: 'Databases', notes: 'Default port for Oracle Database listener.' },
+            { port: 1723, protocol: 'TCP', service: 'PPTP', category: 'Remote Access & Security', notes: 'Point-to-Point Tunneling Protocol (VPN). **Insecure**, often blocked.' },
+            { port: 3306, protocol: 'TCP', service: 'MySQL', category: 'Databases', notes: 'Default port for MySQL and MariaDB database connections. **Bind to localhost** for security.' },
+            { port: 3389, protocol: 'TCP', service: 'RDP', category: 'Remote Access & Security', notes: 'Remote Desktop Protocol. Used to connect to Windows remote desktops.' },
+            { port: 5000, protocol: 'TCP', service: 'UPnP/Flask', category: 'Web & API', notes: 'Commonly used port for Python Flask, Node.js, and other local dev servers.' },
+            { port: 5060, protocol: 'UDP/TCP', service: 'SIP', category: 'Mail & Communication', notes: 'Session Initiation Protocol. Used for VoIP communication.' },
+            { port: 5432, protocol: 'TCP', service: 'PostgreSQL', category: 'Databases', notes: 'Default port for PostgreSQL database connections. **Bind to localhost** for security.' },
+            { port: 5900, protocol: 'TCP', service: 'VNC', category: 'Remote Access & Security', notes: 'Virtual Network Computing. Remote graphical desktop sharing.' },
+            { port: 6379, protocol: 'TCP', service: 'Redis', category: 'Databases', notes: 'Default port for the Redis in-memory data structure store. **Requires strong auth/local binding**.' },
+            { port: 8000, protocol: 'TCP', service: 'HTTP-ALT', category: 'Web & API', notes: 'Alternative HTTP port. Often used by Django, PHP, and other frameworks for local development.' },
+            { port: 8443, protocol: 'TCP', service: 'HTTPS-ALT', category: 'Web & API', notes: 'Alternative secure web port. Often used for secondary HTTPS admin interfaces.' },
+            { port: 8888, protocol: 'TCP', service: 'HTTP-ALT', category: 'Web & API', notes: 'Alternative HTTP port, often used for Jupyter Notebooks or proxy servers.' },
+            { port: 9000, protocol: 'TCP', service: 'HTTP-ALT', category: 'Web & API', notes: 'Common dev port for web servers and services (e.g., PHP-FPM, various proxies).' },
+            { port: 27017, protocol: 'TCP', service: 'MongoDB', category: 'Databases', notes: 'Default port for MongoDB database connections. **Requires strong auth/local binding**.' },
+            
+            // --- EPHEMERAL/DYNAMIC RANGE ---
+            { port: '49152-65535', protocol: 'TCP/UDP', service: 'Dynamic/Private', category: 'Core Networking', notes: 'Used by client applications for outgoing connections. Rarely targeted by firewalls unless specifically needed.' },
+        ];
+
+        const listContainer = document.getElementById('port-list');
+        const categoryFilter = document.getElementById('category-filter');
+        const noResults = document.getElementById('no-results');
+
+        // Dynamically populate filter options
+        function setupFilters() {
+            const categories = [...new Set(portData.map(item => item.category))].sort();
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            });
+        }
+
+        function renderPorts(filteredData) {
+            listContainer.innerHTML = '';
+            
+            if (filteredData.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filteredData.forEach(item => {
+                const colorMap = {
+                    'Web & API': 'blue',
+                    'Remote Access & Security': 'red',
+                    'Mail & Communication': 'yellow',
+                    'Databases': 'indigo',
+                    'Core Networking': 'green',
+                    'Security & Management': 'purple',
+                };
+                const color = colorMap[item.category] || 'gray';
+
+                const cardHtml = `
+                    <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-[1.02] transition duration-300 border-t-4 border-${color}-500">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-4xl font-extrabold text-${color}-700">${item.port}</span>
+                            <span class="px-3 py-1 text-xs font-medium uppercase tracking-wider rounded-full bg-gray-100 text-gray-600">${item.protocol}</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-900">${item.service}</h3>
+                        <p class="text-sm font-semibold mb-3 px-2 py-1 inline-block bg-${color}-100 text-${color}-800 rounded-lg">${item.category}</p>
+                        <p class="text-gray-600 text-base">${item.notes}</p>
+                    </div>
+                `;
+                listContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        function filterPorts() {
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+
+            const filtered = portData.filter(item => {
+                const matchesSearch = 
+                    item.port.toLowerCase().includes(searchText) ||
+                    item.protocol.toLowerCase().includes(searchText) ||
+                    item.service.toLowerCase().includes(searchText) ||
+                    item.notes.toLowerCase().includes(searchText);
+
+                const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+
+                return matchesSearch && matchesCategory;
+            });
+
+            renderPorts(filtered);
+        }
+
+        // Initialize
+        window.onload = () => {
+            setupFilters();
+            filterPorts(); // Initial render of all ports
+        };
+    </script>
+</body>
+</html>
+
 
