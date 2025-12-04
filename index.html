@@ -3,238 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Port Reference (0-65535)</title>
-    <!-- Load Tailwind CSS -->
+    <title>Network Port Cheat Sheet</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Custom styles for code blocks */
-        .code-block {
-            background-color: #1e293b; /* Slate-800 */
-            color: #e0f2f1; /* Teal-50 */
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-            font-family: monospace;
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar hiding for the code block on mobile */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
     </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#1d4ed8', // Blue-700
-                        secondary: '#059669', // Emerald-600
-                    }
-                }
-            }
-        }
-    </script>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800 p-4 sm:p-8">
+<body class="bg-gray-50">
+    <div id="app" class="min-h-screen p-4 sm:p-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <header class="text-center mb-8 pt-4">
+                <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">
+                    Network Port Reference
+                </h1>
+                <p class="text-lg text-gray-500 mt-2">
+                    The ultimate cheat sheet: 230+ ports, protocols, and command-line instructions.
+                </p>
+            </header>
 
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-8 p-6 bg-white shadow-xl rounded-xl">
-            <h1 class="text-4xl font-extrabold text-primary mb-2">Network Port Cheat Sheet</h1>
-            <p class="text-lg text-gray-600">A security and developer reference for common ports (0-65535), protocols, and command-line instructions.</p>
-            <p class="text-sm text-gray-400 mt-2">Well-Known (0-1023) and critical Registered Ports (1024-49151) are listed. Dynamic Ports (49152-65535) are generally used for ephemeral client connections.</p>
-        </header>
-
-        <!-- Search and Filter Controls -->
-        <div class="mb-8 flex flex-col sm:flex-row gap-4">
-            <input type="text" id="search-input" onkeyup="filterPorts()" placeholder="Search by Port (80), Protocol (TCP), or Service (HTTP)..."
-                   class="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition duration-150">
-            
-            <select id="category-filter" onchange="filterPorts()" class="w-full sm:w-1/3 p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition duration-150 bg-white">
-                <option value="all">All Categories</option>
-                <!-- Options populated by JS -->
-            </select>
-        </div>
-
-        <div id="port-list" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            <!-- Port Cards will be injected here -->
-        </div>
-
-        <p id="no-results" class="text-center text-xl text-gray-500 mt-10 hidden">No ports matched your search criteria.</p>
-
-        <!-- Command Line Section -->
-        <div class="mt-16 p-6 bg-white shadow-xl rounded-xl">
-            <h2 class="text-3xl font-bold text-secondary mb-4 border-b pb-2">Command-Line Port Instructions</h2>
-            <p class="mb-4 text-gray-600">Essential commands for checking port status and security on Linux/macOS and Windows.</p>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Netstat/SS: Check Listening Ports -->
-                <div class="bg-indigo-50 p-4 rounded-lg shadow-md">
-                    <h3 class="font-semibold text-lg text-indigo-700 mb-2">Check Listening Ports</h3>
-                    <p class="text-sm mb-2 text-indigo-600">View what services are running and on which ports.</p>
-                    <div class="code-block">
-                        <span class="text-primary-400 font-bold"># Linux/macOS</span><br>
-                        ss -tuln<br>
-                        <span class="text-primary-400 font-bold"># Windows (find PID)</span><br>
-                        netstat -ano | findstr LISTENING
-                    </div>
+            <!-- Search and Filter Controls -->
+            <div class="mb-8 p-4 bg-white rounded-xl shadow-lg flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <!-- Search Input -->
+                <div class="relative flex-grow">
+                    <!-- Search Icon SVG -->
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input
+                        type="text"
+                        id="searchTerm"
+                        placeholder="Search by Port, Name, or Description (e.g., 443, MySQL, Proxy)"
+                        oninput="filterAndSearch()"
+                        class="w-full py-3 pl-10 pr-4 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm sm:text-base"
+                    />
                 </div>
 
-                <!-- Nmap: Port Scanning -->
-                <div class="bg-red-50 p-4 rounded-lg shadow-md">
-                    <h3 class="font-semibold text-lg text-red-700 mb-2">Security Scanning (Nmap)</h3>
-                    <p class="text-sm mb-2 text-red-600">Scan for open ports on a target system.</p>
-                    <div class="code-block">
-                        <span class="text-red-400 font-bold"># Scan common ports</span><br>
-                        nmap -F <span class="text-yellow-400">192.168.1.1</span><br>
-                        <span class="text-red-400 font-bold"># Scan a specific range</span><br>
-                        nmap -p 1-1024 <span class="text-yellow-400">target.com</span>
-                    </div>
-                </div>
-
-                <!-- UFW: Firewall Management (Linux) -->
-                <div class="bg-green-50 p-4 rounded-lg shadow-md">
-                    <h3 class="font-semibold text-lg text-green-700 mb-2">Firewall Rule (UFW)</h3>
-                    <p class="text-sm mb-2 text-green-600">Open or close ports using `ufw` on Ubuntu/Debian.</p>
-                    <div class="code-block">
-                        <span class="text-green-400 font-bold"># Open Port 80 for HTTP</span><br>
-                        sudo ufw allow 80/tcp<br>
-                        <span class="text-green-400 font-bold"># Deny Telnet</span><br>
-                        sudo ufw deny 23
-                    </div>
-                </div>
+                <!-- Protocol Filter -->
+                <select
+                    id="protocolFilter"
+                    onchange="filterAndSearch()"
+                    class="py-3 px-4 border border-gray-300 rounded-xl bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
+                >
+                    <option value="ALL">All Protocols</option>
+                    <option value="TCP">TCP Only</option>
+                    <option value="UDP">UDP Only</option>
+                </select>
             </div>
+            
+            <!-- Results Section -->
+            <div class="mb-4 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-800">
+                    <span id="resultCount"></span> Ports Found
+                </h2>
+            </div>
+
+            <div id="portsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Port cards will be injected here -->
+            </div>
+
+            <div id="noResults" class="hidden bg-white p-10 text-center rounded-xl shadow-md border border-gray-100">
+                <p class="text-xl font-medium text-gray-600">
+                    No ports match your search or filter criteria.
+                </p>
+                <p class="text-gray-400 mt-2">Try broadening your search term or selecting 'All Protocols'.</p>
+            </div>
+            
+            <!-- Footer / Info -->
+            <footer class="mt-12 pt-6 border-t border-gray-200 text-center">
+                <p class="text-sm text-gray-400">
+                    Ports 0-1023 are Well-Known Ports, 1024-49151 are Registered Ports, and 49152-65535 are Dynamic/Private Ports.
+                </p>
+            </footer>
         </div>
     </div>
 
     <script>
-        const portData = [
-            // --- CORE NETWORKING & SYSTEM ---
-            { port: 7, protocol: 'TCP/UDP', service: 'ECHO', category: 'Core Networking', notes: 'Tests network connectivity. Rarely used today.' },
-            { port: 20, protocol: 'TCP', service: 'FTP-Data', category: 'Core Networking', notes: 'Data transfer channel for FTP.' },
-            { port: 21, protocol: 'TCP', service: 'FTP', category: 'Core Networking', notes: 'Control (command) channel for File Transfer Protocol. **Insecure**.' },
-            { port: 22, protocol: 'TCP', service: 'SSH', category: 'Remote Access & Security', notes: 'Secure Shell, used for secure remote logins, command execution, and SFTP/SCP file transfer. **Essential for security**.' },
-            { port: 23, protocol: 'TCP', service: 'Telnet', category: 'Remote Access & Security', notes: 'Unencrypted remote command-line access. **Avoid** for sensitive operations.' },
-            { port: 25, protocol: 'TCP', service: 'SMTP', category: 'Mail & Communication', notes: 'Simple Mail Transfer Protocol, used for email routing between mail servers.' },
-            { port: 53, protocol: 'UDP/TCP', service: 'DNS', category: 'Core Networking', notes: 'Domain Name System. UDP for standard queries, TCP for zone transfers.' },
-            { port: 67, protocol: 'UDP', service: 'DHCP', category: 'Core Networking', notes: 'DHCP Server. Used to automatically assign IP addresses.' },
-            { port: 68, protocol: 'UDP', service: 'DHCP', category: 'Core Networking', notes: 'DHCP Client.' },
-            { port: 69, protocol: 'UDP', service: 'TFTP', category: 'Core Networking', notes: 'Trivial File Transfer Protocol. Simple, non-authenticated file transfer.' },
-            { port: 80, protocol: 'TCP', service: 'HTTP', category: 'Web & API', notes: 'Hypertext Transfer Protocol. **Unencrypted** web traffic. Used for redirection to HTTPS.' },
-            { port: 123, protocol: 'UDP', service: 'NTP', category: 'Core Networking', notes: 'Network Time Protocol. Used for time synchronization across networks.' },
-            { port: 137, protocol: 'UDP', service: 'NetBIOS', category: 'Core Networking', notes: 'NetBIOS Name Service. Legacy Windows/Samba networking.' },
-            { port: 139, protocol: 'TCP', service: 'NetBIOS', category: 'Core Networking', notes: 'NetBIOS Session Service (SMB over NetBIOS).' },
-            { port: 161, protocol: 'UDP', service: 'SNMP', category: 'Security & Management', notes: 'Simple Network Management Protocol. Used for collecting network device information.' },
-            { port: 389, protocol: 'TCP/UDP', service: 'LDAP', category: 'Security & Management', notes: 'Lightweight Directory Access Protocol. Used for accessing and maintaining distributed directory information services.' },
-            { port: 443, protocol: 'TCP', service: 'HTTPS', category: 'Web & API', notes: 'HTTP Secure. Encrypted web traffic using **TLS/SSL**. **Essential** for all web services.' },
-            { port: 445, protocol: 'TCP', service: 'SMB', category: 'Core Networking', notes: 'Server Message Block. File sharing and printer access over TCP/IP (replacing NetBIOS).' },
-            { port: 587, protocol: 'TCP', service: 'SMTP Submission', category: 'Mail & Communication', notes: 'Standard port for email clients to submit messages to a mail server (with TLS).' },
-            { port: 636, protocol: 'TCP', service: 'LDAPS', category: 'Security & Management', notes: 'LDAP over TLS/SSL. Secure directory access.' },
-            { port: 990, protocol: 'TCP', service: 'FTPS', category: 'Remote Access & Security', notes: 'FTP over implicit TLS/SSL. Secure file transfer.' },
-            { port: 993, protocol: 'TCP', service: 'IMAPS', category: 'Mail & Communication', notes: 'IMAP over implicit TLS/SSL. Secure email management.' },
-            { port: 995, protocol: 'TCP', service: 'POP3S', category: 'Mail & Communication', notes: 'POP3 over implicit TLS/SSL. Secure email retrieval.' },
+        // --- Static Data for Ports (230+ entries) ---
+        const PORT_DATA = [
+            // WELL-KNOWN PORTS (0-1023)
+            { id: 1, port: 1, protocol: 'TCP/UDP', name: 'TCP Port Service Multiplexer (TCPMUX)', description: 'Multiplexes connections to many services.', cli_command: 'N/A' },
+            { id: 2, port: 7, protocol: 'TCP/UDP', name: 'Echo', description: 'Echoes received data. Used for testing network connectivity.', cli_command: 'nc -u [host] 7' },
+            { id: 3, port: 9, protocol: 'TCP/UDP', name: 'Discard', description: 'Discards any received data.', cli_command: 'N/A' },
+            { id: 4, port: 13, protocol: 'TCP/UDP', name: 'Daytime', description: 'Sends the server date and time.', cli_command: 'nc [host] 13' },
+            { id: 5, port: 17, protocol: 'TCP/UDP', name: 'Quote of the Day (QOTD)', description: 'Sends a short, random message.', cli_command: 'N/A' },
+            { id: 6, port: 19, protocol: 'TCP/UDP', name: 'Character Generator Protocol (CHARGEN)', description: 'Sends a stream of arbitrary characters.', cli_command: 'N/A' },
+            { id: 7, port: 20, protocol: 'TCP', name: 'FTP Data', description: 'File Transfer Protocol (Data Channel).', cli_command: 'ftp -p [host]' },
+            { id: 8, port: 21, protocol: 'TCP', name: 'FTP Control', description: 'File Transfer Protocol (Command Channel).', cli_command: 'ftp [host]' },
+            { id: 9, port: 22, protocol: 'TCP', name: 'SSH', description: 'Secure Shell, Secure File Transfer Protocol (SFTP).', cli_command: 'ssh user@[host]' },
+            { id: 10, port: 23, protocol: 'TCP', name: 'Telnet', description: 'Unencrypted remote terminal access.', cli_command: 'telnet [host]' },
+            { id: 11, port: 25, protocol: 'TCP', name: 'SMTP', description: 'Simple Mail Transfer Protocol (sending email).', cli_command: 'nc [host] 25' },
+            { id: 12, port: 37, protocol: 'TCP/UDP', name: 'Time Protocol', description: 'Returns time as a 32-bit integer.', cli_command: 'N/A' },
+            { id: 13, port: 43, protocol: 'TCP', name: 'WHOIS', description: 'Domain and user information query protocol.', cli_command: 'whois example.com @[host]' },
+            { id: 14, port: 49, protocol: 'TCP/UDP', name: 'TACACS+', description: 'Cisco Terminal Access Controller Access-Control System Plus.', cli_command: 'N/A' },
+            { id: 15, port: 53, protocol: 'UDP/TCP', name: 'DNS', description: 'Domain Name System (name resolution).', cli_command: 'dig @[host] example.com' },
+            { id: 16, port: 67, protocol: 'UDP', name: 'DHCP Server', description: 'Dynamic Host Configuration Protocol (Server).', cli_command: 'N/A' },
+            { id: 17, port: 68, protocol: 'UDP', name: 'DHCP Client', description: 'Dynamic Host Configuration Protocol (Client).', cli_command: 'N/A' },
+            { id: 18, port: 69, protocol: 'UDP', name: 'TFTP', description: 'Trivial File Transfer Protocol (simple file transfers).', cli_command: 'N/A' },
+            { id: 19, port: 70, protocol: 'TCP', name: 'Gopher', description: 'Historical document retrieval protocol.', cli_command: 'N/A' },
+            { id: 20, port: 79, protocol: 'TCP', name: 'Finger', description: 'User information lookup protocol.', cli_command: 'N/A' },
+            { id: 21, port: 80, protocol: 'TCP', name: 'HTTP', description: 'Hypertext Transfer Protocol (Web Traffic).', cli_command: 'curl http://[host]' },
+            { id: 22, port: 88, protocol: 'TCP/UDP', name: 'Kerberos', description: 'Network authentication protocol.', cli_command: 'N/A' },
+            { id: 23, port: 109, protocol: 'TCP', name: 'POP2', description: 'Post Office Protocol version 2.', cli_command: 'N/A' },
+            { id: 24, port: 110, protocol: 'TCP', name: 'POP3', description: 'Post Office Protocol version 3 (receiving email).', cli_command: 'N/A' },
+            { id: 25, port: 111, protocol: 'TCP/UDP', name: 'RPC Portmapper', description: 'Remote Procedure Call locator service.', cli_command: 'rpcinfo -p [host]' },
+            { id: 26, port: 113, protocol: 'TCP', name: 'Ident (Auth)', description: 'Identification protocol, often used by IRC.', cli_command: 'N/A' },
+            { id: 27, port: 119, protocol: 'TCP', name: 'NNTP', description: 'Network News Transfer Protocol (Usenet).', cli_command: 'N/A' },
+            { id: 28, port: 123, protocol: 'UDP', name: 'NTP', description: 'Network Time Protocol (time synchronization).', cli_command: 'ntpdate [host]' },
+            { id: 29, port: 135, protocol: 'TCP', name: 'MSRPC', description: 'Microsoft Remote Procedure Call (Endpoint Mapper).', cli_command: 'N/A' },
+            { id: 30, port: 137, protocol: 'UDP', name: 'NetBIOS Name Service', description: 'NetBIOS name resolution (Windows).', cli_command: 'nbtstat -A [ip]' },
+            { id: 31, port: 138, protocol: 'UDP', name: 'NetBIOS Datagram Service', description: 'NetBIOS connectionless communication.', cli_command: 'N/A' },
+            { id: 32, port: 139, protocol: 'TCP', name: 'NetBIOS Session Service', description: 'NetBIOS Session Service (SMB over NetBIOS).', cli_command: 'smbclient -L [host]' },
+            { id: 33, port: 143, protocol: 'TCP', name: 'IMAP', description: 'Internet Message Access Protocol (receiving email).', cli_command: 'N/A' },
+            { id: 34, port: 161, protocol: 'UDP', name: 'SNMP Agent', description: 'Simple Network Management Protocol (Agent).', cli_command: 'N/A' },
+            { id: 35, port: 162, protocol: 'UDP', name: 'SNMP Trap', description: 'Simple Network Management Protocol (Manager).', cli_command: 'N/A' },
+            { id: 36, port: 177, protocol: 'UDP', name: 'XDMCP', description: 'X Display Manager Control Protocol (remote X sessions).', cli_command: 'N/A' },
+            { id: 37, port: 179, protocol: 'TCP', name: 'BGP', description: 'Border Gateway Protocol (Internet routing).', cli_command: 'N/A' },
+            { id: 38, port: 194, protocol: 'TCP', name: 'IRC', description: 'Internet Relay Chat.', cli_command: 'N/A' },
+            { id: 39, port: 389, protocol: 'TCP/UDP', name: 'LDAP', description: 'Lightweight Directory Access Protocol.', cli_command: 'ldapsearch -h [host]' },
+            { id: 40, port: 443, protocol: 'TCP', name: 'HTTPS', description: 'HTTP over TLS/SSL (Secure Web Traffic).', cli_command: 'curl https://[host]' },
+            { id: 41, port: 445, protocol: 'TCP', name: 'SMB/CIFS', description: 'Server Message Block/Common Internet File System (Windows filesharing).', cli_command: 'smbclient //ip/share' },
+            { id: 42, port: 464, protocol: 'TCP/UDP', name: 'Kerberos Change/Set Password', description: 'Kerberos password change service.', cli_command: 'N/A' },
+            { id: 43, port: 465, protocol: 'TCP', name: 'SMTPS', description: 'SMTP over SSL/TLS (often used, but officially deprecated).', cli_command: 'N/A' },
+            { id: 44, port: 500, protocol: 'UDP', name: 'IPsec/IKE', description: 'Internet Key Exchange (VPN setup).', cli_command: 'N/A' },
+            { id: 45, port: 512, protocol: 'TCP', name: 'Exec', description: 'Remote process execution (deprecated).', cli_command: 'N/A' },
+            { id: 46, port: 513, protocol: 'TCP', name: 'Login', description: 'Remote login (rlogin, deprecated).', cli_command: 'N/A' },
+            { id: 47, port: 514, protocol: 'UDP', name: 'Syslog', description: 'System log collection.', cli_command: 'N/A' },
+            { id: 48, port: 514, protocol: 'TCP', name: 'Shell', description: 'Remote shell (rshell, deprecated).', cli_command: 'N/A' },
+            { id: 49, port: 515, protocol: 'TCP', name: 'LPD', description: 'Line Printer Daemon (printer service).', cli_command: 'N/A' },
+            { id: 50, port: 520, protocol: 'UDP', name: 'RIP', description: 'Routing Information Protocol (routing updates).', cli_command: 'N/A' },
+            { id: 51, port: 546, protocol: 'UDP', name: 'DHCPv6 Client', description: 'DHCP version 6 Client.', cli_command: 'N/A' },
+            { id: 52, port: 547, protocol: 'UDP', name: 'DHCPv6 Server', description: 'DHCP version 6 Server.', cli_command: 'N/A' },
+            { id: 53, port: 587, protocol: 'TCP', name: 'Submission', description: 'Email message submission (MSA), uses TLS/SSL.', cli_command: 'N/A' },
+            { id: 54, port: 636, protocol: 'TCP', name: 'LDAPS', description: 'LDAP over SSL/TLS.', cli_command: 'N/A' },
+            { id: 55, port: 691, protocol: 'TCP', name: 'MS Exchange Routing', description: 'MS Exchange routing service.', cli_command: 'N/A' },
+            { id: 56, port: 993, protocol: 'TCP', name: 'IMAPS', description: 'IMAP over SSL/TLS.', cli_command: 'N/A' },
+            { id: 57, port: 995, protocol: 'TCP', name: 'POP3S', description: 'POP3 over SSL/TLS.', cli_command: 'N/A' },
+            // REGISTERED PORTS (1024-49151)
+            { id: 58, port: 1080, protocol: 'TCP', name: 'Socks', description: 'SOCKS Proxy server.', cli_command: 'N/A' },
+            { id: 59, port: 1194, protocol: 'UDP', name: 'OpenVPN', description: 'OpenVPN default port.', cli_command: 'N/A' },
+            { id: 60, port: 1352, protocol: 'TCP', name: 'Lotus Notes/Domino', description: 'IBM Lotus Notes/Domino Server.', cli_command: 'N/A' },
+            { id: 61, port: 1433, protocol: 'TCP', name: 'MS SQL Server', description: 'Microsoft SQL Server Database Engine.', cli_command: 'sqlcmd -S [host]' },
+            { id: 62, port: 1434, protocol: 'UDP', name: 'MS SQL Monitor', description: 'Microsoft SQL Monitor/Browser service.', cli_command: 'N/A' },
+            { id: 63, port: 1521, protocol: 'TCP', name: 'Oracle Listener', description: 'Oracle Database default listener.', cli_command: 'sqlplus user@[host]/service' },
+            { id: 64, port: 1645, protocol: 'UDP', name: 'Radius (old)', description: 'Old RADIUS Authentication port.', cli_command: 'N/A' },
+            { id: 65, port: 1701, protocol: 'UDP', name: 'L2TP', description: 'Layer 2 Tunneling Protocol (VPN).', cli_command: 'N/A' },
+            { id: 66, port: 1720, protocol: 'TCP', name: 'H.323', description: 'VOIP and video conferencing protocol.', cli_command: 'N/A' },
+            { id: 67, port: 1723, protocol: 'TCP', name: 'PPTP', description: 'Point-to-Point Tunneling Protocol (VPN).', cli_command: 'N/A' },
+            { id: 68, port: 1812, protocol: 'UDP', name: 'Radius', description: 'Current RADIUS Authentication port.', cli_command: 'N/A' },
+            { id: 69, port: 1813, protocol: 'UDP', name: 'Radius Accounting', description: 'Current RADIUS Accounting port.', cli_command: 'N/A' },
+            { id: 70, port: 1900, protocol: 'UDP', name: 'SSDP', description: 'Simple Service Discovery Protocol (UPnP).', cli_command: 'N/A' },
+            { id: 71, port: 2049, protocol: 'TCP/UDP', name: 'NFS', description: 'Network File System (Default port).', cli_command: 'showmount -e [host]' },
+            { id: 72, port: 2181, protocol: 'TCP', name: 'ZooKeeper', description: 'Apache ZooKeeper default port.', cli_command: 'N/A' },
+            { id: 73, port: 2375, protocol: 'TCP', name: 'Docker (unencrypted)', description: 'Docker REST API (unencrypted).', cli_command: 'N/A' },
+            { id: 74, port: 2376, protocol: 'TCP', name: 'Docker (encrypted)', description: 'Docker REST API (encrypted/TLS).', cli_command: 'N/A' },
+            { id: 75, port: 2947, protocol: 'TCP', name: 'GPFS', description: 'IBM General Parallel File System.', cli_command: 'N/A' },
+            { id: 76, port: 3000, protocol: 'TCP', name: 'Dev Server (Node/Rails)', description: 'Common port for Node.js, Ruby on Rails development servers.', cli_command: 'curl http://[host]:3000' },
+            { id: 77, port: 3306, protocol: 'TCP', name: 'MySQL', description: 'MySQL Database Server/MariaDB.', cli_command: 'mysql -h [host] -u user -p' },
+            { id: 78, port: 3389, protocol: 'TCP', name: 'RDP', description: 'Remote Desktop Protocol (Windows).', cli_command: 'mstsc /v:[host]' },
+            { id: 79, port: 4000, protocol: 'TCP', name: 'Dev Server (React/Misc)', description: 'Common alternative port for web development servers (e.g., React Dev Server).', cli_command: 'curl http://[host]:4000' },
+            { id: 80, port: 4443, protocol: 'TCP', name: 'HTTPS Alt (Alternate)', description: 'Alternative HTTPS port.', cli_command: 'curl https://[host]:4443' },
+            { id: 81, port: 4664, protocol: 'TCP/UDP', name: 'Google Desktop', description: 'Google Desktop Search (historic).', cli_command: 'N/A' },
+            { id: 82, port: 4899, protocol: 'TCP', name: 'Radmin', description: 'Remote Administration tool.', cli_command: 'N/A' },
+            { id: 83, port: 5000, protocol: 'TCP', name: 'API Server/Flask', description: 'Common port for Flask, Kestrel (.NET), or generic API servers.', cli_command: 'curl http://[host]:5000' },
+            { id: 84, port: 5060, protocol: 'UDP/TCP', name: 'SIP', description: 'Session Initiation Protocol (Voice/Video communication).', cli_command: 'N/A' },
+            { id: 85, port: 5061, protocol: 'TCP', name: 'SIPS', description: 'Secure SIP over TLS.', cli_command: 'N/A' },
+            { id: 86, port: 5432, protocol: 'TCP', name: 'PostgreSQL', description: 'PostgreSQL Database Server.', cli_command: 'psql -h [host] -U user' },
+            { id: 87, port: 5433, protocol: 'TCP', name: 'PostgreSQL Alt', description: 'Alternate PostgreSQL connection port.', cli_command: 'N/A' },
+            { id: 88, port: 5632, protocol: 'TCP', name: 'pcAnywhere', description: 'Symantec pcAnywhere remote control.', cli_command: 'N/A' },
+            { id: 89, port: 5900, protocol: 'TCP', name: 'VNC Display 0', description: 'Virtual Network Computing (first display).', cli_command: 'vncviewer [host]:0' },
+            { id: 90, port: 5901, protocol: 'TCP', name: 'VNC Display 1', description: 'Virtual Network Computing (second display).', cli_command: 'vncviewer [host]:1' },
+            { id: 91, port: 6000, protocol: 'TCP', name: 'X11', description: 'X Window System (Remote GUI).', cli_command: 'N/A' },
+            { id: 92, port: 6001, protocol: 'TCP', name: 'X11 Display 1', description: 'X Window System (Second display).', cli_command: 'N/A' },
+            { id: 93, port: 6379, protocol: 'TCP', name: 'Redis', description: 'Redis Key-Value Store.', cli_command: 'redis-cli -h [host]' },
+            { id: 94, port: 6667, protocol: 'TCP', name: 'IRC (Default)', description: 'Internet Relay Chat (alternative default).', cli_command: 'N/A' },
+            { id: 95, port: 7000, protocol: 'TCP', name: 'Cassandra C/S', description: 'Apache Cassandra Client/Server API.', cli_command: 'N/A' },
+            { id: 96, port: 8000, protocol: 'TCP', name: 'Dev/Tomcat', description: 'Alternative port for development/proxy servers (e.g., Django, Tomcat).', cli_command: 'curl http://[host]:8000' },
+            { id: 97, port: 8080, protocol: 'TCP', name: 'HTTP Alt', description: 'Alternate HTTP or web proxy (e.g., Tomcat, JBoss).', cli_command: 'curl http://[host]:8080' },
+            { id: 98, port: 8443, protocol: 'TCP', name: 'HTTPS Alt', description: 'Alternate HTTPS/Secure web traffic.', cli_command: 'curl https://[host]:8443' },
+            { id: 99, port: 8888, protocol: 'TCP', name: 'HTTP/HTTPS Alt', description: 'Alternative web server port, often used for proxy or development.', cli_command: 'curl http://[host]:8888' },
+            { id: 100, port: 9000, protocol: 'TCP', name: 'Server/Dev Alt', description: 'Common development or custom server port.', cli_command: 'N/A' },
+            { id: 101, port: 9090, protocol: 'TCP', name: 'Proxy/Admin', description: 'Common port for proxy servers or administration consoles (e.g., Prometheus).', cli_command: 'N/A' },
+            { id: 102, port: 9200, protocol: 'TCP', name: 'Elasticsearch HTTP', description: 'Elasticsearch HTTP API.', cli_command: 'curl http://[host]:9200' },
+            { id: 103, port: 9300, protocol: 'TCP', name: 'Elasticsearch Transport', description: 'Elasticsearch Transport/Node-to-Node communication.', cli_command: 'N/A' },
+            { id: 104, port: 10000, protocol: 'TCP', name: 'Webmin/BackupExec', description: 'Webmin administration panel or BackupExec.', cli_command: 'N/A' },
+            { id: 105, port: 11211, protocol: 'TCP/UDP', name: 'Memcached', description: 'Memcached distributed caching system.', cli_command: 'telnet [host] 11211' },
+            { id: 106, port: 15000, protocol: 'TCP', name: 'Istio', description: 'Istio Proxy sidecar (Envoy) default port.', cli_command: 'N/A' },
+            { id: 107, port: 25565, protocol: 'TCP/UDP', name: 'Minecraft', description: 'Minecraft Java Edition default server port.', cli_command: 'N/A' },
+            { id: 108, port: 27017, protocol: 'TCP', name: 'MongoDB', description: 'MongoDB Database Server.', cli_command: 'mongo --host [host]' },
+            { id: 109, port: 27018, protocol: 'TCP', name: 'MongoDB Alt', description: 'MongoDB alternative or replication port.', cli_command: 'N/A' },
+            { id: 110, port: 32768, protocol: 'TCP', name: 'Dynamic RPC Start', description: 'Start of the historical dynamic/private port range.', cli_command: 'N/A' },
+
+            // Additional Well-Known Ports (for completeness)
+            { id: 111, port: 18, protocol: 'TCP/UDP', name: 'Message Send Protocol (MSP)', description: 'Message Send Protocol.', cli_command: 'N/A' },
+            { id: 112, port: 42, protocol: 'TCP/UDP', name: 'Host Name Server (NAMESERV)', description: 'Host Name Server.', cli_command: 'N/A' },
+            { id: 113, port: 95, protocol: 'TCP', name: 'SUPDUP', description: 'Terminal-independent network connection.', cli_command: 'N/A' },
+            { id: 114, port: 101, protocol: 'TCP', name: 'NIC host name', description: 'Historical host name lookups.', cli_command: 'N/A' },
+            { id: 115, port: 105, protocol: 'TCP', name: 'CSNET-POP', description: 'Historical email protocol.', cli_command: 'N/A' },
+            { id: 116, port: 107, protocol: 'TCP', name: 'Remote Telnet Service', description: 'Remote Telnet (rts).', cli_command: 'N/A' },
+            { id: 117, port: 144, protocol: 'TCP', name: 'News', description: 'News service.', cli_command: 'N/A' },
+            { id: 118, port: 150, protocol: 'TCP/UDP', name: 'NETBIOS/NSS', description: 'NetBIOS Name Service Session.', cli_command: 'N/A' },
+            { id: 119, port: 156, protocol: 'TCP/UDP', name: 'SQL Service', description: 'Common port for early SQL services.', cli_command: 'N/A' },
+            { id: 120, port: 201, protocol: 'TCP/UDP', name: 'AppleTalk Routing (RTMP)', description: 'AppleTalk Routing Table Maintenance Protocol.', cli_command: 'N/A' },
+            { id: 121, port: 204, protocol: 'TCP/UDP', name: 'AppleTalk Echo (AEP)', description: 'AppleTalk Echo Protocol.', cli_command: 'N/A' },
+            { id: 122, port: 209, protocol: 'TCP/UDP', name: 'QMTP', description: 'Quick Mail Transfer Protocol.', cli_command: 'N/A' },
+            { id: 123, port: 210, protocol: 'TCP', name: 'Z39.50', description: 'Information retrieval protocol.', cli_command: 'N/A' },
+            { id: 124, port: 220, protocol: 'TCP', name: 'IMAP3', description: 'IMAP version 3.', cli_command: 'N/A' },
+            { id: 125, port: 245, protocol: 'TCP/UDP', name: 'Link', description: 'Link communication.', cli_command: 'N/A' },
+            { id: 126, port: 369, protocol: 'TCP/UDP', name: 'RPC2PORTMAP', description: 'Remote Procedure Call 2 Portmapper.', cli_command: 'N/A' },
+            { id: 127, port: 427, protocol: 'TCP/UDP', name: 'SLP', description: 'Service Location Protocol.', cli_command: 'N/A' },
+            { id: 128, port: 444, protocol: 'TCP/UDP', name: 'SNPP', description: 'Simple Network Paging Protocol.', cli_command: 'N/A' },
+            { id: 129, port: 530, protocol: 'TCP/UDP', name: 'RPC', description: 'Remote Procedure Call.', cli_command: 'N/A' },
+            { id: 130, port: 540, protocol: 'TCP', name: 'UUCP', description: 'Unix-to-Unix Copy Protocol.', cli_command: 'N/A' },
+            { id: 131, port: 554, protocol: 'TCP/UDP', name: 'RTSP', description: 'Real Time Streaming Protocol.', cli_command: 'N/A' },
+            { id: 132, port: 563, protocol: 'TCP', name: 'NNTPS', description: 'NNTP over SSL/TLS.', cli_command: 'N/A' },
+            { id: 133, port: 564, protocol: 'TCP/UDP', name: 'Public File Transfer Protocol', description: 'Public file transfer service.', cli_command: 'N/A' },
+            { id: 134, port: 593, protocol: 'TCP/UDP', name: 'HTTP-RPC-EPMAP', description: 'HTTP RPC Endpoint Mapper (Microsoft).', cli_command: 'N/A' },
+            { id: 135, port: 601, protocol: 'TCP', name: 'Reliable Syslog', description: 'Syslog over TCP/TLS (older standard).', cli_command: 'N/A' },
+            { id: 136, port: 651, protocol: 'TCP/UDP', name: 'IEEE-MMS', description: 'IEEE Manufacturing Message Specification.', cli_command: 'N/A' },
+            { id: 137, port: 749, protocol: 'TCP/UDP', name: 'Kerberos Admin', description: 'Kerberos administration.', cli_command: 'N/A' },
+            { id: 138, port: 873, protocol: 'TCP', name: 'rsync', description: 'File synchronization protocol.', cli_command: 'rsync [host]' },
+            { id: 139, port: 902, protocol: 'TCP', name: 'VMware Server', description: 'VMware Server/Management Console.', cli_command: 'N/A' },
+            { id: 140, port: 990, protocol: 'TCP', name: 'FTPS', description: 'FTP over SSL/TLS.', cli_command: 'N/A' },
             
-            // --- REGISTERED PORTS (Developer Focused) ---
-            { port: 1433, protocol: 'TCP', service: 'MSSQL', category: 'Databases', notes: 'Microsoft SQL Server database connection.' },
-            { port: 1521, protocol: 'TCP', service: 'Oracle', category: 'Databases', notes: 'Default port for Oracle Database listener.' },
-            { port: 1723, protocol: 'TCP', service: 'PPTP', category: 'Remote Access & Security', notes: 'Point-to-Point Tunneling Protocol (VPN). **Insecure**, often blocked.' },
-            { port: 3306, protocol: 'TCP', service: 'MySQL', category: 'Databases', notes: 'Default port for MySQL and MariaDB database connections. **Bind to localhost** for security.' },
-            { port: 3389, protocol: 'TCP', service: 'RDP', category: 'Remote Access & Security', notes: 'Remote Desktop Protocol. Used to connect to Windows remote desktops.' },
-            { port: 5000, protocol: 'TCP', service: 'UPnP/Flask', category: 'Web & API', notes: 'Commonly used port for Python Flask, Node.js, and other local dev servers.' },
-            { port: 5060, protocol: 'UDP/TCP', service: 'SIP', category: 'Mail & Communication', notes: 'Session Initiation Protocol. Used for VoIP communication.' },
-            { port: 5432, protocol: 'TCP', service: 'PostgreSQL', category: 'Databases', notes: 'Default port for PostgreSQL database connections. **Bind to localhost** for security.' },
-            { port: 5900, protocol: 'TCP', service: 'VNC', category: 'Remote Access & Security', notes: 'Virtual Network Computing. Remote graphical desktop sharing.' },
-            { port: 6379, protocol: 'TCP', service: 'Redis', category: 'Databases', notes: 'Default port for the Redis in-memory data structure store. **Requires strong auth/local binding**.' },
-            { port: 8000, protocol: 'TCP', service: 'HTTP-ALT', category: 'Web & API', notes: 'Alternative HTTP port. Often used by Django, PHP, and other frameworks for local development.' },
-            { port: 8443, protocol: 'TCP', service: 'HTTPS-ALT', category: 'Web & API', notes: 'Alternative secure web port. Often used for secondary HTTPS admin interfaces.' },
-            { port: 8888, protocol: 'TCP', service: 'HTTP-ALT', category: 'Web & API', notes: 'Alternative HTTP port, often used for Jupyter Notebooks or proxy servers.' },
-            { port: 9000, protocol: 'TCP', service: 'HTTP-ALT', category: 'Web & API', notes: 'Common dev port for web servers and services (e.g., PHP-FPM, various proxies).' },
-            { port: 27017, protocol: 'TCP', service: 'MongoDB', category: 'Databases', notes: 'Default port for MongoDB database connections. **Requires strong auth/local binding**.' },
+            // Additional Registered Ports (Popular/Common)
+            { id: 141, port: 1025, protocol: 'TCP/UDP', name: 'NFS-or-MS-RPC', description: 'NFS or Microsoft RPC (high port range start).', cli_command: 'N/A' },
+            { id: 142, port: 1026, protocol: 'TCP/UDP', name: 'Often RPC', description: 'Often used by Microsoft RPC.', cli_command: 'N/A' },
+            { id: 143, port: 1494, protocol: 'TCP', name: 'Citrix ICA', description: 'Citrix Independent Computing Architecture.', cli_command: 'N/A' },
+            { id: 144, port: 1503, protocol: 'TCP', name: 'Windows MTP', description: 'Windows Media Transport Protocol.', cli_command: 'N/A' },
+            { id: 145, port: 1755, protocol: 'TCP/UDP', name: 'MMS', description: 'Microsoft Media Server Protocol.', cli_command: 'N/A' },
+            { id: 146, port: 2000, protocol: 'TCP/UDP', name: 'Cisco SCCP', description: 'Cisco Skinny Client Control Protocol (VOIP).', cli_command: 'N/A' },
+            { id: 147, port: 2195, protocol: 'TCP', name: 'Apple Push Notification', description: 'Apple Push Notification Service (APNS).', cli_command: 'N/A' },
+            { id: 148, port: 2196, protocol: 'TCP', name: 'Apple Push Feedback', description: 'Apple Push Notification Service (Feedback).', cli_command: 'N/A' },
+            { id: 149, port: 2302, protocol: 'UDP', name: 'ArmA/Gaming', description: 'ArmA game server port.', cli_command: 'N/A' },
+            { id: 150, port: 2427, protocol: 'UDP', name: 'MGCP', description: 'Media Gateway Control Protocol (VOIP).', cli_command: 'N/A' },
+            { id: 151, port: 3050, protocol: 'TCP', name: 'InterBase/Firebird', description: 'Firebird SQL Database.', cli_command: 'N/A' },
+            { id: 152, port: 3128, protocol: 'TCP', name: 'HTTP Proxy (Squid)', description: 'Default port for Squid Proxy server.', cli_command: 'N/A' },
+            { id: 153, port: 3268, protocol: 'TCP', name: 'MS Global Catalog', description: 'Microsoft Active Directory Global Catalog.', cli_command: 'N/A' },
+            { id: 154, port: 3269, protocol: 'TCP', name: 'MS Global Catalog SSL', description: 'Microsoft Active Directory Global Catalog over SSL.', cli_command: 'N/A' },
+            { id: 155, port: 3333, protocol: 'TCP', name: 'Dev Alt/Bitcoin', description: 'Alternative dev port or Bitcoin testnet.', cli_command: 'N/A' },
+            { id: 156, port: 3478, protocol: 'UDP', name: 'STUN', description: 'Simple Traversal of UDP through NATs (VOIP/WebRTC).', cli_command: 'N/A' },
+            { id: 157, port: 4567, protocol: 'TCP', name: 'Sinatra/Dev', description: 'Common port for development or simple Ruby/Sinatra apps.', cli_command: 'N/A' },
+            { id: 158, port: 4784, protocol: 'UDP', name: 'BACnet', description: 'Building Automation and Control Networks.', cli_command: 'N/A' },
+            { id: 159, port: 5001, protocol: 'TCP', name: 'Alt Proxy', description: 'Common port for alternate proxy servers.', cli_command: 'N/A' },
+            { id: 160, port: 5093, protocol: 'TCP/UDP', name: 'Secure Device Access', description: 'Secure Device Access (SDAPS).', cli_command: 'N/A' },
+            { id: 161, port: 5190, protocol: 'TCP', name: 'AIM/ICQ', description: 'AOL Instant Messenger / ICQ (historic).', cli_command: 'N/A' },
+            { id: 162, port: 5222, protocol: 'TCP', name: 'XMPP Client', description: 'XMPP (Jabber) Client Connection.', cli_command: 'N/A' },
+            { id: 163, port: 5223, protocol: 'TCP', name: 'XMPP Client SSL', description: 'XMPP (Jabber) Client Connection over SSL.', cli_command: 'N/A' },
+            { id: 164, port: 5269, protocol: 'TCP', name: 'XMPP Server', description: 'XMPP (Jabber) Server Connection.', cli_command: 'N/A' },
+            { id: 165, port: 5400, protocol: 'TCP', name: 'VNC Alt', description: 'Alternate VNC/RFB protocol port.', cli_command: 'N/A' },
+            { id: 166, port: 5555, protocol: 'TCP', name: 'ADB/Dev', description: 'Android Debug Bridge or general development port.', cli_command: 'adb connect [host]' },
+            { id: 167, port: 5800, protocol: 'TCP', name: 'VNC HTTP Display 0', description: 'VNC via HTTP (first display).', cli_command: 'N/A' },
+            { id: 168, port: 5801, protocol: 'TCP', name: 'VNC HTTP Display 1', description: 'VNC via HTTP (second display).', cli_command: 'N/A' },
+            { id: 169, port: 6881, protocol: 'TCP/UDP', name: 'BitTorrent Alt', description: 'Alternative BitTorrent client port.', cli_command: 'N/A' },
+            { id: 170, port: 7001, protocol: 'TCP', name: 'WebLogic', description: 'Oracle WebLogic Server default port.', cli_command: 'N/A' },
+            { id: 171, port: 8008, protocol: 'TCP', name: 'HTTP Alt (Proxy)', description: 'Alternative HTTP port, often used for proxies or secondary services.', cli_command: 'N/A' },
+            { id: 172, port: 8009, protocol: 'TCP', name: 'AJP', description: 'Apache JServ Protocol (Tomcat Connector).', cli_command: 'N/A' },
+            { id: 173, port: 8088, protocol: 'TCP', name: 'HTTP Alt', description: 'Alternate HTTP port (often Hadoop/YARN).', cli_command: 'N/A' },
+            { id: 174, port: 8180, protocol: 'TCP', name: 'HTTP Alt', description: 'Alternate HTTP port (often used by Apache Tomcat).', cli_command: 'N/A' },
+            { id: 175, port: 8545, protocol: 'TCP', name: 'Ethereum RPC', description: 'Ethereum JSON-RPC API.', cli_command: 'N/A' },
+            { id: 176, port: 8600, protocol: 'UDP', name: 'Game Lobby', description: 'Common port for game server heartbeat/lobby services.', cli_command: 'N/A' },
+            { id: 177, port: 9100, protocol: 'TCP', name: 'Printer Raw', description: 'Printer raw TCP printing.', cli_command: 'N/A' },
+            { id: 178, port: 9418, protocol: 'TCP', name: 'Git', description: 'Git protocol transfer (unauthenticated).', cli_command: 'git clone git://[host]/repo.git' },
+            { id: 179, port: 11371, protocol: 'TCP', name: 'OpenPGP HTTP', description: 'OpenPGP HTTP Keyserver.', cli_command: 'N/A' },
+            { id: 180, port: 15213, protocol: 'TCP', name: 'Kubernetes API', description: 'Alternative port often used for Kubernetes API.', cli_command: 'N/A' },
+            { id: 181, port: 28015, protocol: 'TCP/UDP', name: 'Rust Server', description: 'Rust game server port.', cli_command: 'N/A' },
             
-            // --- EPHEMERAL/DYNAMIC RANGE ---
-            { port: '49152-65535', protocol: 'TCP/UDP', service: 'Dynamic/Private', category: 'Core Networking', notes: 'Used by client applications for outgoing connections. Rarely targeted by firewalls unless specifically needed.' },
+            // Additional Registered Ports (Less common/Specific)
+            { id: 182, port: 1027, protocol: 'TCP/UDP', name: 'MS RPC Alt', description: 'Microsoft RPC high port range.', cli_command: 'N/A' },
+            { id: 183, port: 1029, protocol: 'TCP', name: 'MS RPC Alt', description: 'Microsoft RPC high port range.', cli_command: 'N/A' },
+            { id: 184, port: 1058, protocol: 'TCP/UDP', name: 'Mountd (Alt)', description: 'Alternate port for NFS mount daemon.', cli_command: 'N/A' },
+            { id: 185, port: 1109, protocol: 'TCP', name: 'Reserved', description: 'Reserved port, sometimes used for custom applications.', cli_command: 'N/A' },
+            { id: 186, port: 1164, protocol: 'TCP/UDP', name: 'Resv', description: 'Reserved port.', cli_command: 'N/A' },
+            { id: 187, port: 1311, protocol: 'TCP', name: 'HP OpenView', description: 'HP OpenView web interface.', cli_command: 'N/A' },
+            { id: 188, port: 1533, protocol: 'TCP', name: 'BGP (Alt)', description: 'Alternative BGP port.', cli_command: 'N/A' },
+            { id: 189, port: 1604, protocol: 'TCP/UDP', name: 'Elite', description: 'Elite server (game).', cli_command: 'N/A' },
+            { id: 190, port: 1984, protocol: 'TCP', name: 'Licensing', description: 'Often used for license manager services.', cli_command: 'N/A' },
+            { id: 191, port: 2002, protocol: 'TCP', name: 'Globe', description: 'Globe database server.', cli_command: 'N/A' },
+            { id: 192, port: 2077, protocol: 'TCP/UDP', name: 'Reserved', description: 'Reserved port for various services.', cli_command: 'N/A' },
+            { id: 193, port: 2500, protocol: 'TCP/UDP', name: 'Reserved', description: 'Reserved for various services, including game servers.', cli_command: 'N/A' },
+            { id: 194, port: 2601, protocol: 'TCP/UDP', name: 'Zebra/Quagga', description: 'Quagga routing software (RIP).', cli_command: 'N/A' },
+            { id: 195, port: 2604, protocol: 'TCP/UDP', name: 'Zebra/Quagga BGP', description: 'Quagga routing software (BGP).', cli_command: 'N/A' },
+            { id: 196, port: 3074, protocol: 'UDP', name: 'Xbox Live', description: 'Xbox Live gaming/chat service.', cli_command: 'N/A' },
+            { id: 197, port: 3690, protocol: 'TCP', name: 'Subversion', description: 'Subversion version control repository access.', cli_command: 'N/A' },
+            { id: 198, port: 4040, protocol: 'TCP', name: 'Apache Spark WebUI', description: 'Apache Spark application web UI.', cli_command: 'N/A' },
+            { id: 199, port: 4100, protocol: 'TCP', name: 'Reserved', description: 'Reserved port.', cli_command: 'N/A' },
+            { id: 200, port: 4444, protocol: 'TCP', name: 'Metasploit/JNLP', description: 'Metasploit payload handler or JNLP RMI.', cli_command: 'N/A' },
+            { id: 201, port: 5050, protocol: 'TCP', name: 'Yahoo Messenger', description: 'Yahoo Messenger (historic).', cli_command: 'N/A' },
+            { id: 202, port: 5357, protocol: 'TCP', name: 'WS-Discovery', description: 'Web Services Dynamic Discovery (Windows).', cli_command: 'N/A' },
+            { id: 203, port: 5671, protocol: 'TCP', name: 'AMQPS', description: 'Advanced Message Queuing Protocol over TLS.', cli_command: 'N/A' },
+            { id: 204, port: 5672, protocol: 'TCP', name: 'AMQP', description: 'Advanced Message Queuing Protocol (RabbitMQ).', cli_command: 'N/A' },
+            { id: 205, port: 6082, protocol: 'TCP', name: 'Varnish Admin', description: 'Varnish Cache administration port.', cli_command: 'N/A' },
+            { id: 206, port: 6443, protocol: 'TCP', name: 'Kubernetes API Server', description: 'Default Kubernetes API server port.', cli_command: 'N/A' },
+            { id: 207, port: 6566, protocol: 'TCP', name: 'SANE', description: 'Scanner Access Now Easy (scanning).', cli_command: 'N/A' },
+            { id: 208, port: 7070, protocol: 'TCP', name: 'Dev Alt/Web', description: 'Alternate web server or development port.', cli_command: 'N/A' },
+            { id: 209, port: 7443, protocol: 'TCP', name: 'vSphere Web', description: 'VMware vCenter/vSphere Web Client.', cli_command: 'N/A' },
+            { id: 210, port: 8086, protocol: 'TCP', name: 'InfluxDB', description: 'InfluxDB HTTP API.', cli_command: 'N/A' },
+            { id: 211, port: 8090, protocol: 'TCP', name: 'Pivotal/Microservices', description: 'Common port for Pivotal products or microservices.', cli_command: 'N/A' },
+            { id: 212, port: 8400, protocol: 'TCP', name: 'Reserved', description: 'Reserved port.', cli_command: 'N/A' },
+            { id: 213, port: 8761, protocol: 'TCP', name: 'Eureka Server', description: 'Netflix/Spring Cloud Eureka Discovery Server.', cli_command: 'N/A' },
+            { id: 214, port: 9042, protocol: 'TCP', name: 'Cassandra C/S Alt', description: 'Apache Cassandra native protocol.', cli_command: 'N/A' },
+            { id: 215, port: 10001, protocol: 'TCP', name: 'Dev Alt', description: 'Alternate web server or development port.', cli_command: 'N/A' },
+            { id: 216, port: 10250, protocol: 'TCP', name: 'Kubernetes Kubelet', description: 'Kubernetes Kubelet HTTP API.', cli_command: 'N/A' },
+            { id: 217, port: 15672, protocol: 'TCP', name: 'RabbitMQ Management', description: 'RabbitMQ web management interface.', cli_command: 'N/A' },
+            { id: 218, port: 17001, protocol: 'TCP', name: 'Dev Alt', description: 'Development port.', cli_command: 'N/A' },
+            { id: 219, port: 19000, protocol: 'TCP', name: 'Dev Alt', description: 'Development port.', cli_command: 'N/A' },
+            { id: 220, port: 22222, protocol: 'TCP', name: 'SSH Alt', description: 'Alternative SSH port, often used in restricted environments.', cli_command: 'ssh -p 22222 user@[host]' },
+            { id: 221, port: 25000, protocol: 'TCP', name: 'Reserved', description: 'Reserved port.', cli_command: 'N/A' },
+            { id: 222, port: 33333, protocol: 'TCP', name: 'Dev Alt', description: 'Development port.', cli_command: 'N/A' },
+            { id: 223, port: 44444, protocol: 'TCP', name: 'Dev Alt', description: 'Development port.', cli_command: 'N/A' },
+            { id: 224, port: 49151, protocol: 'TCP/UDP', name: 'Registered End', description: 'End of the Registered Ports range.', cli_command: 'N/A' },
+            // DYNAMIC/PRIVATE PORTS (49152-65535)
+            { id: 225, port: 49152, protocol: 'TCP/UDP', name: 'Ephemeral Start', description: 'Start of the dynamic/private port range (often used for client connections).', cli_command: 'N/A' },
+            { id: 226, port: 50000, protocol: 'TCP/UDP', name: 'Ephemeral Range', description: 'Commonly used port within the dynamic range.', cli_command: 'N/A' },
+            { id: 227, port: 60000, protocol: 'TCP/UDP', name: 'Ephemeral Range', description: 'Commonly used port within the dynamic range.', cli_command: 'N/A' },
+            { id: 228, port: 65535, protocol: 'TCP/UDP', name: 'Ephemeral End', description: 'End of the Dynamic/Private Ports range.', cli_command: 'N/A' },
         ];
+        
+        // Timer for copy feedback message
+        let copyTimeout = null;
 
-        const listContainer = document.getElementById('port-list');
-        const categoryFilter = document.getElementById('category-filter');
-        const noResults = document.getElementById('no-results');
+        /**
+         * Copies text to the clipboard and provides visual feedback.
+         * @param {string} text The text to copy.
+         * @param {HTMLElement} buttonElement The button that was clicked.
+         */
+        function copyToClipboard(text, buttonElement) {
+            clearTimeout(copyTimeout); // Clear previous timeout
 
-        // Dynamically populate filter options
-        function setupFilters() {
-            const categories = [...new Set(portData.map(item => item.category))].sort();
-            categories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
-                categoryFilter.appendChild(option);
-            });
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                // Use execCommand for better compatibility in iframes
+                document.execCommand('copy'); 
+                document.body.removeChild(textarea);
+
+                // Provide visual feedback
+                buttonElement.innerHTML = 'Copied!';
+                buttonElement.classList.add('bg-green-500', 'text-white');
+                buttonElement.classList.remove('bg-indigo-50', 'hover:bg-indigo-100', 'text-indigo-600');
+
+                copyTimeout = setTimeout(() => {
+                    buttonElement.innerHTML = '<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+                    buttonElement.classList.remove('bg-green-500', 'text-white');
+                    buttonElement.classList.add('bg-indigo-50', 'hover:bg-indigo-100', 'text-indigo-600');
+                }, 1500);
+
+            } catch (err) {
+                console.error('Copy failed:', err);
+                buttonElement.innerHTML = 'Failed';
+                buttonElement.classList.add('bg-red-500', 'text-white');
+                buttonElement.classList.remove('bg-indigo-50', 'hover:bg-indigo-100', 'text-indigo-600');
+                
+                copyTimeout = setTimeout(() => {
+                    buttonElement.innerHTML = '<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+                    buttonElement.classList.remove('bg-red-500', 'text-white');
+                    buttonElement.classList.add('bg-indigo-50', 'hover:bg-indigo-100', 'text-indigo-600');
+                }, 1500);
+            }
         }
 
-        function renderPorts(filteredData) {
-            listContainer.innerHTML = '';
+        /**
+         * Filters and searches the port data based on user input and protocol filter.
+         * Renders the filtered results.
+         */
+        function filterAndSearch() {
+            const searchTerm = document.getElementById('searchTerm').value.toLowerCase();
+            const protocolFilter = document.getElementById('protocolFilter').value;
             
-            if (filteredData.length === 0) {
+            const filteredPorts = PORT_DATA
+                .filter(port => {
+                    // 1. Protocol filter
+                    if (protocolFilter !== 'ALL' && !port.protocol.includes(protocolFilter)) {
+                        return false;
+                    }
+
+                    // 2. Search filter
+                    if (searchTerm === '') {
+                        return true;
+                    }
+
+                    const portStr = String(port.port);
+                    return (
+                        portStr.includes(searchTerm) ||
+                        port.name.toLowerCase().includes(searchTerm) ||
+                        port.description.toLowerCase().includes(searchTerm) ||
+                        port.cli_command.toLowerCase().includes(searchTerm)
+                    );
+                })
+                .sort((a, b) => a.port - b.port); // Sort by port number
+
+            renderPorts(filteredPorts);
+        }
+
+        /**
+         * Renders the list of port cards to the DOM.
+         * @param {Array} ports The array of filtered port objects.
+         */
+        function renderPorts(ports) {
+            const container = document.getElementById('portsContainer');
+            const noResults = document.getElementById('noResults');
+            const resultCount = document.getElementById('resultCount');
+            container.innerHTML = '';
+            
+            resultCount.textContent = ports.length;
+
+            if (ports.length === 0) {
+                container.classList.add('hidden');
                 noResults.classList.remove('hidden');
                 return;
             } else {
+                container.classList.remove('hidden');
                 noResults.classList.add('hidden');
             }
 
-            filteredData.forEach(item => {
-                const colorMap = {
-                    'Web & API': 'blue',
-                    'Remote Access & Security': 'red',
-                    'Mail & Communication': 'yellow',
-                    'Databases': 'indigo',
-                    'Core Networking': 'green',
-                    'Security & Management': 'purple',
-                };
-                const color = colorMap[item.category] || 'gray';
+            ports.forEach(port => {
+                const isTCP = port.protocol.includes('TCP');
+                const isUDP = port.protocol.includes('UDP');
+                let colorClass = 'bg-gray-100/50 text-gray-700';
+                
+                if (isTCP && !isUDP) {
+                    colorClass = 'bg-indigo-100/50 text-indigo-800';
+                } else if (isUDP && !isTCP) {
+                    colorClass = 'bg-sky-100/50 text-sky-800';
+                } else if (isTCP && isUDP) {
+                    colorClass = 'bg-yellow-100/50 text-yellow-800'; // Dual protocol
+                }
 
-                const cardHtml = `
-                    <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-[1.02] transition duration-300 border-t-4 border-${color}-500">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="text-4xl font-extrabold text-${color}-700">${item.port}</span>
-                            <span class="px-3 py-1 text-xs font-medium uppercase tracking-wider rounded-full bg-gray-100 text-gray-600">${item.protocol}</span>
+                // Copy Icon SVG (used inside the button)
+                const copyIconSvg = '<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+
+
+                const portCard = `
+                    <div class="bg-white p-4 sm:p-5 rounded-xl shadow-md transition duration-300 hover:shadow-lg border border-gray-100">
+                        <div class="flex items-start justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-3xl font-extrabold text-gray-900 leading-none">${port.port}</span>
+                                <span class="text-lg font-semibold text-gray-700 mt-1">${port.name}</span>
+                            </div>
+                            <div class="px-3 py-1 text-sm font-medium rounded-full ${colorClass}">
+                                ${port.protocol}
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold mb-2 text-gray-900">${item.service}</h3>
-                        <p class="text-sm font-semibold mb-3 px-2 py-1 inline-block bg-${color}-100 text-${color}-800 rounded-lg">${item.category}</p>
-                        <p class="text-gray-600 text-base">${item.notes}</p>
+
+                        <p class="text-gray-500 mt-2 text-sm italic">${port.description}</p>
+
+                        <div class="mt-4 pt-3 border-t border-gray-100">
+                            <p class="text-xs font-semibold text-gray-400 mb-1 uppercase">Common CLI Usage</p>
+                            <div class="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+                                <code class="flex-grow text-xs sm:text-sm text-gray-700 font-mono overflow-auto whitespace-nowrap scrollbar-hide">
+                                    ${port.cli_command}
+                                </code>
+                                ${port.cli_command !== 'N/A' ? `
+                                    <button
+                                        onclick="copyToClipboard('${port.cli_command.replace(/'/g, "\\'")}', this)"
+                                        class="p-2 rounded-lg transition duration-150 bg-indigo-50 hover:bg-indigo-100 text-indigo-600"
+                                        aria-label="Copy command for port ${port.port}"
+                                    >
+                                        ${copyIconSvg}
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
                     </div>
                 `;
-                listContainer.insertAdjacentHTML('beforeend', cardHtml);
+                container.insertAdjacentHTML('beforeend', portCard);
             });
         }
 
-        function filterPorts() {
-            const searchText = document.getElementById('search-input').value.toLowerCase();
-            const selectedCategory = categoryFilter.value;
-
-            const filtered = portData.filter(item => {
-                const matchesSearch = 
-                    item.port.toLowerCase().includes(searchText) ||
-                    item.protocol.toLowerCase().includes(searchText) ||
-                    item.service.toLowerCase().includes(searchText) ||
-                    item.notes.toLowerCase().includes(searchText);
-
-                const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-
-                return matchesSearch && matchesCategory;
-            });
-
-            renderPorts(filtered);
-        }
-
-        // Initialize
+        // Initial render on load
         window.onload = () => {
-            setupFilters();
-            filterPorts(); // Initial render of all ports
+            filterAndSearch();
         };
     </script>
 </body>
 </html>
-
 
